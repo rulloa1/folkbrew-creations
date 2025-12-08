@@ -41,16 +41,27 @@ const Pricing = () => {
   ];
 
   return (
-    <section id="pricing" className="relative py-32 px-6 bg-secondary/30">
-      <div className="container mx-auto max-w-4xl">
+    <section id="pricing" className="relative py-32 px-6 bg-secondary/20">
+      {/* Background decorations */}
+      <div className="absolute inset-0 pointer-events-none">
+        <div className="drain-blade w-24 h-6" style={{ top: '10%', left: '5%' }} />
+        <div className="drain-crystal w-8 h-12 floating-animation" style={{ bottom: '15%', right: '5%' }} />
+        <div className="glow-star" style={{ top: '30%', right: '15%' }} />
+        <div className="drain-cross w-6 h-6" style={{ bottom: '25%', left: '10%' }} />
+      </div>
+
+      <div className="container mx-auto max-w-4xl relative z-10">
         {/* Section header */}
         <div className="text-center mb-4 animate-slide-up">
-          <h2 className="font-display text-4xl sm:text-5xl md:text-6xl italic text-foreground tracking-wide">
+          <h2 
+            className="draincore-font text-3xl sm:text-4xl md:text-5xl text-foreground tracking-[0.15em] uppercase glitch-effect"
+            data-text="INVESTMENT TIERS"
+          >
             INVESTMENT TIERS
           </h2>
         </div>
         
-        <p className="font-mono text-xs tracking-[0.2em] text-muted-foreground text-center mb-16">
+        <p className="font-mono text-xs tracking-[0.2em] text-muted-foreground text-center mb-16 uppercase">
           TRANSPARENT PRICING // NO HIDDEN FEES
         </p>
 
@@ -68,7 +79,7 @@ const Pricing = () => {
         </div>
 
         {/* Guarantee text */}
-        <p className="text-center font-mono text-xs text-muted-foreground mt-12">
+        <p className="text-center font-mono text-xs text-muted-foreground mt-12 tracking-[0.1em] uppercase">
           30-DAY SATISFACTION GUARANTEE. CANCEL ANYTIME WITH 30 DAYS NOTICE.
         </p>
       </div>
