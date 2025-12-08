@@ -1,4 +1,4 @@
-import { LayoutGrid, Zap, Target, Sparkles } from "lucide-react";
+import { LayoutGrid, Zap, Target } from "lucide-react";
 import ServiceCard from "./ServiceCard";
 
 const Services = () => {
@@ -43,22 +43,23 @@ const Services = () => {
     <section id="services" className="relative py-32 px-6">
       {/* Background decorations */}
       <div className="absolute inset-0 pointer-events-none">
-        <div className="absolute top-20 left-[5%]">
-          <Sparkles className="w-4 h-4 text-muted-foreground/20 animate-pulse-slow" />
-        </div>
-        <div className="absolute bottom-20 right-[8%]">
-          <Sparkles className="w-3 h-3 text-muted-foreground/25 animate-pulse-slow" style={{ animationDelay: '1.5s' }} />
-        </div>
+        <div className="drain-crystal w-10 h-14 floating-animation" style={{ top: '10%', left: '5%' }} />
+        <div className="drain-blade w-20 h-5" style={{ bottom: '15%', right: '8%' }} />
+        <div className="glow-star" style={{ top: '20%', right: '10%' }} />
+        <div className="drain-cross w-5 h-5" style={{ bottom: '20%', left: '8%' }} />
       </div>
 
-      <div className="container mx-auto max-w-6xl">
+      <div className="container mx-auto max-w-6xl relative z-10">
         {/* Section header */}
         <div className="text-center mb-16 animate-slide-up">
-          <h2 className="font-display text-4xl sm:text-5xl md:text-6xl italic text-foreground tracking-wide">
+          <h2 
+            className="draincore-font text-3xl sm:text-4xl md:text-5xl text-foreground tracking-[0.15em] uppercase glitch-effect"
+            data-text="ENTERPRISE SOLUTIONS"
+          >
             ENTERPRISE SOLUTIONS
           </h2>
-          <div className="mt-4 flex justify-center">
-            <div className="w-16 h-px bg-muted-foreground/30" />
+          <div className="mt-6 flex justify-center">
+            <div className="chrome-pipe w-24 h-0.5" />
           </div>
         </div>
 

@@ -1,40 +1,50 @@
-import { Sparkles } from "lucide-react";
-
 const Hero = () => {
   return (
-    <section className="relative min-h-screen flex flex-col items-center justify-center px-6 pt-20 overflow-hidden">
-      {/* Background decorations */}
+    <section className="relative min-h-screen flex flex-col items-center justify-center px-6 pt-20 overflow-hidden lightning-bg digital-noise">
+      {/* Drain pattern decorations */}
       <div className="absolute inset-0 pointer-events-none">
-        <div className="absolute top-1/4 left-[10%] animate-pulse-slow">
-          <Sparkles className="w-4 h-4 text-muted-foreground/30" />
-        </div>
-        <div className="absolute top-1/3 right-[15%] animate-pulse-slow" style={{ animationDelay: '1s' }}>
-          <Sparkles className="w-3 h-3 text-muted-foreground/20" />
-        </div>
-        <div className="absolute bottom-1/3 left-[20%] animate-pulse-slow" style={{ animationDelay: '2s' }}>
-          <Sparkles className="w-3 h-3 text-muted-foreground/25" />
-        </div>
-        <div className="absolute top-1/2 right-[10%] animate-pulse-slow" style={{ animationDelay: '0.5s' }}>
-          <Sparkles className="w-4 h-4 text-muted-foreground/30" />
-        </div>
+        {/* Stars */}
+        <div className="drain-sharp-star floating-animation" style={{ top: '15%', left: '8%' }} />
+        <div className="drain-sharp-star floating-animation" style={{ top: '25%', right: '12%', animationDelay: '-2s' }} />
+        <div className="drain-sharp-star floating-animation" style={{ bottom: '30%', left: '15%', animationDelay: '-4s' }} />
         
-        {/* Vertical line decoration */}
-        <div className="absolute left-[15%] top-24 w-px h-32 bg-gradient-to-b from-transparent via-muted-foreground/30 to-transparent" />
+        {/* Crystals */}
+        <div className="drain-crystal floating-animation w-8 h-12" style={{ top: '40%', right: '8%', animationDelay: '-1s' }} />
+        <div className="drain-crystal floating-animation w-6 h-9" style={{ bottom: '25%', right: '20%', animationDelay: '-3s' }} />
+        
+        {/* Blades */}
+        <div className="drain-blade w-16 h-4" style={{ top: '20%', left: '25%' }} />
+        <div className="drain-blade w-12 h-3" style={{ bottom: '35%', right: '25%' }} />
+        
+        {/* Crosses */}
+        <div className="drain-cross w-6 h-6" style={{ top: '60%', left: '5%' }} />
+        <div className="drain-cross w-5 h-5" style={{ top: '30%', right: '5%' }} />
+
+        {/* Glow stars */}
+        <div className="glow-star" style={{ top: '18%', right: '30%' }} />
+        <div className="glow-star" style={{ bottom: '40%', left: '30%' }} />
+        
+        {/* Chrome vertical line */}
+        <div className="absolute left-[12%] top-24 w-px h-40 bg-gradient-to-b from-transparent via-primary/50 to-transparent" />
+        <div className="absolute right-[12%] bottom-24 w-px h-32 bg-gradient-to-b from-transparent via-primary/30 to-transparent" />
       </div>
 
       {/* Main title */}
-      <div className="text-center animate-fade-in">
-        <h1 className="font-display text-5xl sm:text-7xl md:text-8xl lg:text-9xl tracking-wider text-foreground mb-8">
+      <div className="text-center animate-fade-in relative z-10">
+        <h1 
+          className="draincore-font text-4xl sm:text-6xl md:text-7xl lg:text-8xl tracking-[0.15em] text-foreground mb-8 glitch-effect"
+          data-text="ROYAL AI SOLUTIONS"
+        >
           ROYAL AI SOLUTIONS
         </h1>
         
-        <p className="font-mono text-xs sm:text-sm tracking-[0.3em] text-muted-foreground">
+        <p className="font-mono text-xs sm:text-sm tracking-[0.3em] text-muted-foreground uppercase">
           AUTOMATION // LEAD GENERATION // ENTERPRISE SOLUTIONS
         </p>
 
-        {/* Decorative line under subtitle */}
+        {/* Chrome pipe decoration */}
         <div className="mt-12 flex justify-center">
-          <div className="w-24 h-px bg-gradient-to-r from-transparent via-muted-foreground/50 to-transparent" />
+          <div className="chrome-pipe w-32 h-1" />
         </div>
       </div>
     </section>
