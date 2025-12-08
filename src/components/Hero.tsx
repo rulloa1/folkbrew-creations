@@ -1,6 +1,6 @@
 const Hero = () => {
   return (
-    <section className="relative px-6 py-16 drip-effect">
+    <section className="relative px-6 py-16 drip-effect min-h-[80vh] flex items-center justify-center">
       <div className="max-w-6xl mx-auto text-center">
         <h1 
           className="text-5xl md:text-7xl lg:text-8xl gothic-text text-foreground mb-8 glitch-effect tracking-wider drop-shadow-[0_0_20px_hsl(0_0%_100%/0.3)]" 
