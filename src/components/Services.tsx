@@ -7,6 +7,8 @@ const Services = () => {
       icon: LayoutGrid,
       title: "Web Development",
       description: "Premium, conversion-optimized websites designed to establish your digital presence and drive results.",
+      price: "$2,500",
+      priceLabel: "ONE-TIME",
       features: [
         "Custom Website Design",
         "Mobile-First Responsive",
@@ -18,6 +20,8 @@ const Services = () => {
       icon: Zap,
       title: "AI Automation",
       description: "Intelligent automation systems that handle repetitive tasks, freeing your team to focus on growth.",
+      price: "$997",
+      priceLabel: "/MONTH",
       features: [
         "Workflow Automation",
         "Email & SMS Sequences",
@@ -30,6 +34,8 @@ const Services = () => {
       icon: Brain,
       title: "Lead Generation",
       description: "AI-powered lead capture and nurturing systems that work around the clock to grow your pipeline.",
+      price: "$750",
+      priceLabel: "/MONTH",
       features: [
         "Smart Chatbots",
         "Lead Scoring",

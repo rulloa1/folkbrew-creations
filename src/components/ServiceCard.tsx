@@ -4,12 +4,14 @@ interface ServiceCardProps {
   icon: LucideIcon;
   title: string;
   description: string;
+  price: string;
+  priceLabel: string;
   features: string[];
   featured?: boolean;
   index: number;
 }
 
-const ServiceCard = ({ icon: Icon, title, description, features, featured, index }: ServiceCardProps) => {
+const ServiceCard = ({ icon: Icon, title, description, price, priceLabel, features, featured, index }: ServiceCardProps) => {
   return (
     <div className={`relative group floating-animation ${featured ? 'md:-mt-4' : ''}`}>
       {featured && (
@@ -29,7 +31,14 @@ const ServiceCard = ({ icon: Icon, title, description, features, featured, index
           <Icon className="w-12 h-12 text-foreground z-10 drop-shadow-[0_0_20px_hsl(0_0%_100%)]" />
         </div>
         
-        <h3 className="text-2xl gothic-text text-foreground mb-3">{title}</h3>
+        <h3 className="text-2xl gothic-text text-foreground mb-2">{title}</h3>
+        
+        {/* Pricing */}
+        <div className="mb-4">
+          <span className="text-3xl gothic-text text-foreground">{price}</span>
+          <span className="text-primary/60 ml-2 draincore-font text-xs">{priceLabel}</span>
+        </div>
+        
         <p className="text-primary/80 mb-6 draincore-font text-sm">{description}</p>
         
         <ul className="space-y-3 mb-4">
