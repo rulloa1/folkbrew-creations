@@ -67,7 +67,7 @@ const Contact = () => {
     {
       icon: Mail,
       label: "Email",
-      value: "contact@royalsolutions.me",
+      value: "roryulloa@gmail.com",
       decoration: "drain-spike",
       decorationStyle: { top: '0.5rem', right: '0.5rem' },
       decorationClass: "w-3 h-4 rotate-[30deg]",
