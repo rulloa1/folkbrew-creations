@@ -4,9 +4,9 @@ const Navbar = () => {
       <nav className="max-w-6xl mx-auto flex justify-between items-center">
         <div 
           className="gothic-text text-2xl text-foreground glitch-effect" 
-          data-text="ROYAL AI"
+          data-text="RoyAISolutions"
         >
-          ROYAL AI
+          RoyAISolutions
         </div>
         <div className="hidden md:flex space-x-8 draincore-font">
           <a 
