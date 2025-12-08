@@ -75,7 +75,7 @@ const Contact = () => {
     {
       icon: Phone,
       label: "Phone",
-      value: "+1 (555) 000-0000",
+      value: "(346) 298-5038",
       decoration: "drain-cross",
       decorationStyle: { bottom: '0.5rem', left: '0.5rem' },
       decorationClass: "w-4 h-4",
