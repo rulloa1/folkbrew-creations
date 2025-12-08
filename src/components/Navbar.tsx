@@ -1,33 +1,35 @@
 const Navbar = () => {
   return (
-    <nav className="fixed top-0 left-0 right-0 z-50 bg-background/90 backdrop-blur-sm border-b border-border">
-      <div className="container mx-auto px-6 py-4 flex items-center justify-between">
-        <a href="#" className="draincore-font text-xl text-foreground tracking-[0.2em] uppercase">
+    <header className="relative z-10 p-6 brutalist-border border-b border-primary/40 bg-card/50 backdrop-blur-sm">
+      <nav className="max-w-6xl mx-auto flex justify-between items-center">
+        <div 
+          className="gothic-text text-2xl text-foreground glitch-effect" 
+          data-text="ROYAL AI"
+        >
           ROYAL AI
-        </a>
-        
-        <div className="hidden md:flex items-center gap-8">
+        </div>
+        <div className="hidden md:flex space-x-8 draincore-font">
           <a 
             href="#services" 
-            className="font-mono text-xs tracking-[0.15em] text-muted-foreground hover:text-foreground transition-colors uppercase"
+            className="text-primary hover:text-foreground transition-colors duration-300 hover:drop-shadow-[0_0_10px_hsl(0_0%_100%/0.8)]"
           >
             SERVICES
           </a>
           <a 
             href="#pricing" 
-            className="font-mono text-xs tracking-[0.15em] text-muted-foreground hover:text-foreground transition-colors uppercase"
+            className="text-primary hover:text-foreground transition-colors duration-300 hover:drop-shadow-[0_0_10px_hsl(0_0%_100%/0.8)]"
           >
             PRICING
           </a>
           <a 
             href="#contact" 
-            className="font-mono text-xs tracking-[0.15em] text-muted-foreground hover:text-foreground transition-colors uppercase"
+            className="text-primary hover:text-foreground transition-colors duration-300 hover:drop-shadow-[0_0_10px_hsl(0_0%_100%/0.8)]"
           >
             CONTACT
           </a>
         </div>
-      </div>
-    </nav>
+      </nav>
+    </header>
   );
 };
 

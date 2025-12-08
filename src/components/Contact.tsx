@@ -1,7 +1,4 @@
 import { Mail, Phone, MapPin } from "lucide-react";
-import { Button } from "./ui/button";
-import { Input } from "./ui/input";
-import { Textarea } from "./ui/textarea";
 import { useState } from "react";
 import { useToast } from "@/hooks/use-toast";
 
@@ -24,115 +21,115 @@ const Contact = () => {
 
   const contactInfo = [
     {
-      icon: <Mail className="w-4 h-4" />,
+      icon: Mail,
       label: "Email",
       value: "contact@royalsolutions.me",
+      decoration: "drain-spike",
+      decorationStyle: { top: '0.5rem', right: '0.5rem' },
+      decorationClass: "w-3 h-4 rotate-[30deg]",
     },
     {
-      icon: <Phone className="w-4 h-4" />,
+      icon: Phone,
       label: "Phone",
       value: "+1 (555) 000-0000",
+      decoration: "drain-cross",
+      decorationStyle: { bottom: '0.5rem', left: '0.5rem' },
+      decorationClass: "w-4 h-4",
     },
     {
-      icon: <MapPin className="w-4 h-4" />,
+      icon: MapPin,
       label: "Location",
       value: "Remote // Worldwide",
+      decoration: "drain-sharp-star",
+      decorationStyle: { top: '0.5rem', left: '0.5rem' },
+      decorationClass: "scale-50",
     },
   ];
 
   return (
-    <section id="contact" className="relative py-32 px-6">
-      {/* Background decorations */}
-      <div className="absolute inset-0 pointer-events-none">
-        <div className="drain-sharp-star floating-animation" style={{ top: '15%', right: '10%' }} />
-        <div className="drain-blade w-16 h-4" style={{ bottom: '20%', left: '5%' }} />
-        <div className="glow-star" style={{ top: '40%', left: '8%' }} />
-        <div className="drain-crystal w-6 h-9 floating-animation" style={{ bottom: '30%', right: '8%', animationDelay: '-2s' }} />
-      </div>
-
-      <div className="container mx-auto max-w-5xl relative z-10">
+    <section id="contact" className="relative px-6 py-20 border-t border-foreground/30">
+      <div className="max-w-4xl mx-auto">
         {/* Section header */}
-        <div className="text-center mb-16 animate-slide-up">
+        <div className="text-center mb-16">
           <h2 
-            className="draincore-font text-3xl sm:text-4xl md:text-5xl text-foreground tracking-[0.15em] uppercase glitch-effect"
+            className="text-4xl md:text-5xl lg:text-6xl gothic-text text-foreground mb-4 glitch-effect tracking-widest drop-shadow-[0_0_15px_hsl(0_0%_100%/0.4)]" 
             data-text="INITIATE CONTACT"
           >
             INITIATE CONTACT
           </h2>
-          <div className="mt-6 flex justify-center">
-            <div className="chrome-pipe w-24 h-0.5" />
-          </div>
+          <div className="w-32 h-px bg-gradient-to-r from-transparent via-foreground/80 to-transparent mx-auto shadow-[0_0_10px_hsl(0_0%_100%/0.6)]" />
         </div>
 
-        <div className="grid lg:grid-cols-2 gap-12 lg:gap-16">
-          {/* Contact info */}
-          <div className="space-y-6 animate-slide-up" style={{ animationDelay: '0.1s' }}>
-            {contactInfo.map((info, index) => (
-              <div key={index} className="glass-card p-6 group hover:shadow-[0_0_20px_hsl(0_0%_100%/0.08)] transition-all duration-300">
-                <div className="flex items-center gap-3 mb-2">
-                  <div className="w-8 h-8 brutalist-border bg-secondary/50 flex items-center justify-center">
-                    <span className="text-primary">{info.icon}</span>
-                  </div>
-                  <h3 className="draincore-font text-base text-foreground tracking-[0.1em] uppercase">{info.label}</h3>
-                </div>
-                <p className="font-mono text-sm text-muted-foreground uppercase tracking-wide ml-11">{info.value}</p>
+        {/* Contact info cards */}
+        <div className="grid grid-cols-1 md:grid-cols-3 gap-8 mb-12">
+          {contactInfo.map((info, index) => (
+            <div 
+              key={index} 
+              className="brutalist-border p-6 bg-card/70 backdrop-blur-sm relative overflow-hidden text-center"
+            >
+              <div className="absolute inset-0 bg-gradient-to-br from-foreground/10 to-transparent" />
+              <info.icon className="w-8 h-8 text-foreground mx-auto mb-4 drop-shadow-[0_0_15px_hsl(0_0%_100%/0.8)]" />
+              <h3 className="gothic-text text-foreground mb-2">{info.label}</h3>
+              <p className="text-primary/70 draincore-font text-sm break-all">{info.value}</p>
+              <div 
+                className={`absolute ${info.decoration} ${info.decorationClass}`} 
+                style={{ ...info.decorationStyle, animationDelay: `${0.5 + index * 0.7}s` }} 
+              />
+            </div>
+          ))}
+        </div>
+
+        {/* Contact Form */}
+        <div className="brutalist-border p-8 bg-card/70 backdrop-blur-sm relative overflow-hidden">
+          <div className="absolute inset-0 bg-gradient-to-br from-foreground/10 to-transparent" />
+          
+          <form onSubmit={handleSubmit} className="space-y-6 relative z-10">
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+              <div>
+                <label className="draincore-font text-primary/80 mb-2 block text-sm">NAME</label>
+                <input 
+                  type="text"
+                  value={formData.name}
+                  onChange={(e) => setFormData({ ...formData, name: e.target.value })}
+                  className="w-full brutalist-border bg-card/50 text-foreground px-4 py-3 draincore-font focus:outline-none focus:shadow-[0_0_15px_hsl(0_0%_100%/0.3)] transition-all placeholder:text-muted-foreground"
+                  placeholder="Your name"
+                  required
+                />
               </div>
-            ))}
-          </div>
-
-          {/* Contact form */}
-          <form 
-            onSubmit={handleSubmit} 
-            className="glass-card p-8 space-y-6 animate-slide-up"
-            style={{ animationDelay: '0.2s' }}
-          >
-            <div>
-              <label className="font-mono text-xs tracking-[0.15em] text-muted-foreground uppercase block mb-2">
-                Name
-              </label>
-              <Input
-                value={formData.name}
-                onChange={(e) => setFormData({ ...formData, name: e.target.value })}
-                className="bg-secondary border-border font-mono text-sm rounded-none brutalist-border uppercase tracking-wide"
-                placeholder="YOUR NAME"
-                required
-              />
+              <div>
+                <label className="draincore-font text-primary/80 mb-2 block text-sm">EMAIL</label>
+                <input 
+                  type="email"
+                  value={formData.email}
+                  onChange={(e) => setFormData({ ...formData, email: e.target.value })}
+                  className="w-full brutalist-border bg-card/50 text-foreground px-4 py-3 draincore-font focus:outline-none focus:shadow-[0_0_15px_hsl(0_0%_100%/0.3)] transition-all placeholder:text-muted-foreground"
+                  placeholder="your@email.com"
+                  required
+                />
+              </div>
             </div>
-
+            
             <div>
-              <label className="font-mono text-xs tracking-[0.15em] text-muted-foreground uppercase block mb-2">
-                Email
-              </label>
-              <Input
-                type="email"
-                value={formData.email}
-                onChange={(e) => setFormData({ ...formData, email: e.target.value })}
-                className="bg-secondary border-border font-mono text-sm rounded-none brutalist-border"
-                placeholder="your@email.com"
-                required
-              />
-            </div>
-
-            <div>
-              <label className="font-mono text-xs tracking-[0.15em] text-muted-foreground uppercase block mb-2">
-                Message
-              </label>
-              <Textarea
+              <label className="draincore-font text-primary/80 mb-2 block text-sm">MESSAGE</label>
+              <textarea 
+                rows={6}
                 value={formData.message}
                 onChange={(e) => setFormData({ ...formData, message: e.target.value })}
-                className="bg-secondary border-border font-mono text-sm min-h-[120px] resize-none rounded-none brutalist-border"
+                className="w-full brutalist-border bg-card/50 text-foreground px-4 py-3 draincore-font focus:outline-none focus:shadow-[0_0_15px_hsl(0_0%_100%/0.3)] transition-all resize-none placeholder:text-muted-foreground"
                 placeholder="Tell us about your project..."
                 required
               />
             </div>
 
-            <Button
+            <button 
               type="submit"
-              className="w-full bg-foreground text-background hover:bg-foreground/90 font-mono text-xs tracking-[0.15em] uppercase rounded-none brutalist-border"
+              className="w-full brutalist-border bg-foreground text-background hover:bg-foreground/90 py-4 draincore-font transition-all duration-300 shadow-[0_0_20px_hsl(0_0%_100%/0.8)] hover:shadow-[0_0_30px_hsl(0_0%_100%)]"
             >
               SEND MESSAGE
-            </Button>
+            </button>
           </form>
+
+          <div className="absolute bottom-4 right-4 drain-zigzag w-6 h-8" style={{ animationDelay: '2.3s' }} />
         </div>
       </div>
     </section>
