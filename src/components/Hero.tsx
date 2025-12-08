@@ -8,7 +8,7 @@ const Hero = () => {
         >
           RoyAISolutions
         </h1>
-        <p className="text-lg md:text-xl draincore-font text-primary/90 max-w-2xl mx-auto">
+        <p className="text-lg md:text-xl draincore-font text-primary/90 max-w-2xl mx-auto whitespace-nowrap">
           AUTOMATION // LEAD GENERATION // ENTERPRISE SOLUTIONS
         </p>
       </div>
