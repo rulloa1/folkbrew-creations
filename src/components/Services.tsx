@@ -1,10 +1,10 @@
-import { LayoutGrid, Zap, Target } from "lucide-react";
+import { LayoutGrid, Zap, Brain } from "lucide-react";
 import ServiceCard from "./ServiceCard";
 
 const Services = () => {
   const services = [
     {
-      icon: <LayoutGrid className="w-6 h-6 text-foreground" />,
+      icon: LayoutGrid,
       title: "Web Development",
       description: "Premium, conversion-optimized websites designed to establish your digital presence and drive results.",
       features: [
@@ -15,7 +15,7 @@ const Services = () => {
       ],
     },
     {
-      icon: <Zap className="w-6 h-6 text-foreground" />,
+      icon: Zap,
       title: "AI Automation",
       description: "Intelligent automation systems that handle repetitive tasks, freeing your team to focus on growth.",
       features: [
@@ -27,7 +27,7 @@ const Services = () => {
       featured: true,
     },
     {
-      icon: <Target className="w-6 h-6 text-foreground" />,
+      icon: Brain,
       title: "Lead Generation",
       description: "AI-powered lead capture and nurturing systems that work around the clock to grow your pipeline.",
       features: [
@@ -40,42 +40,30 @@ const Services = () => {
   ];
 
   return (
-    <section id="services" className="relative py-32 px-6">
-      {/* Background decorations */}
-      <div className="absolute inset-0 pointer-events-none">
-        <div className="drain-crystal w-10 h-14 floating-animation" style={{ top: '10%', left: '5%' }} />
-        <div className="drain-blade w-20 h-5" style={{ bottom: '15%', right: '8%' }} />
-        <div className="glow-star" style={{ top: '20%', right: '10%' }} />
-        <div className="drain-cross w-5 h-5" style={{ bottom: '20%', left: '8%' }} />
-      </div>
-
-      <div className="container mx-auto max-w-6xl relative z-10">
+    <section id="services" className="relative px-6 py-20">
+      <div className="max-w-6xl mx-auto">
         {/* Section header */}
-        <div className="text-center mb-16 animate-slide-up">
+        <div className="text-center mb-16">
           <h2 
-            className="draincore-font text-3xl sm:text-4xl md:text-5xl text-foreground tracking-[0.15em] uppercase glitch-effect"
+            className="text-4xl md:text-5xl lg:text-6xl gothic-text text-foreground mb-4 glitch-effect tracking-widest drop-shadow-[0_0_15px_hsl(0_0%_100%/0.4)]" 
             data-text="ENTERPRISE SOLUTIONS"
           >
             ENTERPRISE SOLUTIONS
           </h2>
-          <div className="mt-6 flex justify-center">
-            <div className="chrome-pipe w-24 h-0.5" />
-          </div>
+          <div className="w-32 h-px bg-gradient-to-r from-transparent via-foreground/80 to-transparent mx-auto shadow-[0_0_10px_hsl(0_0%_100%/0.6)]" />
         </div>
 
         {/* Service cards grid */}
-        <div className="grid md:grid-cols-3 gap-6 lg:gap-8">
+        <div className="grid grid-cols-1 md:grid-cols-3 gap-8 lg:gap-12">
           {services.map((service, index) => (
-            <div 
-              key={index} 
-              className="animate-slide-up"
-              style={{ animationDelay: `${index * 0.15}s` }}
-            >
-              <ServiceCard {...service} />
-            </div>
+            <ServiceCard key={service.title} {...service} index={index} />
           ))}
         </div>
       </div>
+
+      {/* Background lightning effects */}
+      <div className="absolute top-1/4 left-1/3 w-px h-40 bg-gradient-to-b from-foreground/80 via-foreground/40 to-transparent animate-pulse shadow-[0_0_8px_hsl(0_0%_100%/0.6)]" />
+      <div className="absolute top-1/2 right-1/4 w-px h-32 bg-gradient-to-b from-foreground/60 via-foreground/20 to-transparent animate-pulse shadow-[0_0_6px_hsl(0_0%_100%/0.5)]" style={{ animationDelay: '1s' }} />
     </section>
   );
 };
