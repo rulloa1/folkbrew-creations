@@ -4,9 +4,9 @@ const Hero = () => {
       <div className="max-w-6xl mx-auto text-center">
         <h1 
           className="text-5xl md:text-7xl lg:text-8xl gothic-text text-foreground mb-8 glitch-effect tracking-wider drop-shadow-[0_0_20px_hsl(0_0%_100%/0.3)]" 
-          data-text="ROYAL AI SOLUTIONS"
+          data-text="RoyAISolutions"
         >
-          ROYAL AI SOLUTIONS
+          RoyAISolutions
         </h1>
         <p className="text-lg md:text-xl draincore-font text-primary/90 max-w-2xl mx-auto">
           AUTOMATION // LEAD GENERATION // ENTERPRISE SOLUTIONS
