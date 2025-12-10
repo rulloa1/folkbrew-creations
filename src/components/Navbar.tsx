@@ -1,32 +1,43 @@
 const Navbar = () => {
+  const scrollToSection = (e: React.MouseEvent<HTMLAnchorElement>, sectionId: string) => {
+    e.preventDefault();
+    const element = document.getElementById(sectionId);
+    if (element) {
+      element.scrollIntoView({ behavior: 'smooth', block: 'start' });
+    }
+  };
+
+  const navLinks = [
+    { id: 'services', label: 'SERVICES' },
+    { id: 'pricing', label: 'PRICING' },
+    { id: 'contact', label: 'CONTACT' },
+  ];
+
   return (
     <header className="relative z-10 p-6 brutalist-border border-b border-primary/40 bg-card/50 backdrop-blur-sm">
       <nav className="max-w-6xl mx-auto flex justify-between items-center">
-        <div 
-          className="gothic-text text-2xl text-foreground glitch-effect" 
+        <a 
+          href="#"
+          onClick={(e) => {
+            e.preventDefault();
+            window.scrollTo({ top: 0, behavior: 'smooth' });
+          }}
+          className="gothic-text text-2xl text-foreground glitch-effect cursor-pointer" 
           data-text="RoyAISolutions"
         >
           RoyAISolutions
-        </div>
+        </a>
         <div className="hidden md:flex space-x-8 draincore-font">
-          <a 
-            href="#services" 
-            className="text-primary hover:text-foreground transition-colors duration-300 hover:drop-shadow-[0_0_10px_hsl(0_0%_100%/0.8)]"
-          >
-            SERVICES
-          </a>
-          <a 
-            href="#pricing" 
-            className="text-primary hover:text-foreground transition-colors duration-300 hover:drop-shadow-[0_0_10px_hsl(0_0%_100%/0.8)]"
-          >
-            PRICING
-          </a>
-          <a 
-            href="#contact" 
-            className="text-primary hover:text-foreground transition-colors duration-300 hover:drop-shadow-[0_0_10px_hsl(0_0%_100%/0.8)]"
-          >
-            CONTACT
-          </a>
+          {navLinks.map((link) => (
+            <a 
+              key={link.id}
+              href={`#${link.id}`}
+              onClick={(e) => scrollToSection(e, link.id)}
+              className="text-primary hover:text-foreground transition-colors duration-300 hover:drop-shadow-[0_0_10px_hsl(0_0%_100%/0.8)]"
+            >
+              {link.label}
+            </a>
+          ))}
         </div>
       </nav>
     </header>
