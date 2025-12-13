@@ -43,19 +43,23 @@ const Contact = () => {
     setIsSubmitting(true);
 
     try {
-      const { error } = await supabase
-        .from('leads')
-        .insert({
-          first_name: validation.data.firstName,
-          last_name: validation.data.lastName,
+      const { data, error } = await supabase.functions.invoke('submit-lead', {
+        body: {
+          firstName: validation.data.firstName,
+          lastName: validation.data.lastName,
           email: validation.data.email,
           phone: validation.data.phone,
           company: validation.data.company,
           budget: validation.data.budget,
           needs: validation.data.needs,
-        });
+        },
+      });
 
       if (error) throw error;
+      
+      if (data?.error) {
+        throw new Error(data.error);
+      }
 
       toast({
         title: "MESSAGE SENT",
@@ -63,10 +67,13 @@ const Contact = () => {
       });
       setFormData({ firstName: "", lastName: "", email: "", phone: "", company: "", budget: "", needs: "" });
     } catch (error) {
-      console.error('Error submitting lead:', error);
+      const message = error instanceof Error ? error.message : "Failed to send message. Please try again.";
+      if (import.meta.env.DEV) {
+        console.error('Error submitting lead:', error);
+      }
       toast({
         title: "ERROR",
-        description: "Failed to send message. Please try again.",
+        description: message,
         variant: "destructive",
       });
     } finally {
