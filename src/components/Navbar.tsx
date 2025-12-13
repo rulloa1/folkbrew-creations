@@ -13,6 +13,11 @@ const Navbar = () => {
     { id: 'contact', label: 'CONTACT' },
   ];
 
+  const handleAdminClick = (e: React.MouseEvent<HTMLAnchorElement>) => {
+    e.preventDefault();
+    window.location.href = '/admin';
+  };
+
   return (
     <header className="relative z-10 p-6 brutalist-border border-b border-primary/40 bg-card/50 backdrop-blur-sm">
       <nav className="max-w-6xl mx-auto flex justify-between items-center">
@@ -27,7 +32,7 @@ const Navbar = () => {
         >
           RoyAISolutions
         </a>
-        <div className="hidden md:flex space-x-8 draincore-font">
+        <div className="hidden md:flex space-x-8 draincore-font items-center">
           {navLinks.map((link) => (
             <a 
               key={link.id}
@@ -38,6 +43,13 @@ const Navbar = () => {
               {link.label}
             </a>
           ))}
+          <a
+            href="/admin"
+            onClick={handleAdminClick}
+            className="brutalist-border bg-foreground/10 hover:bg-foreground/20 text-foreground px-4 py-1.5 text-sm transition-all"
+          >
+            ADMIN
+          </a>
         </div>
       </nav>
     </header>
