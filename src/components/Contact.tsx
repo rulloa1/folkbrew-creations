@@ -5,24 +5,31 @@ import { supabase } from "@/integrations/supabase/client";
 import { z } from "zod";
 
 const contactSchema = z.object({
-  name: z.string().trim().min(1, "Name is required").max(100, "Name must be less than 100 characters"),
+  firstName: z.string().trim().min(1, "First name is required").max(50, "First name must be less than 50 characters"),
+  lastName: z.string().trim().min(1, "Last name is required").max(50, "Last name must be less than 50 characters"),
   email: z.string().trim().email("Invalid email address").max(255, "Email must be less than 255 characters"),
-  message: z.string().trim().min(1, "Message is required").max(1000, "Message must be less than 1000 characters"),
+  phone: z.string().trim().min(1, "Phone is required").max(20, "Phone must be less than 20 characters"),
+  company: z.string().trim().min(1, "Company is required").max(100, "Company must be less than 100 characters"),
+  budget: z.string().trim().min(1, "Budget is required").max(50, "Budget must be less than 50 characters"),
+  needs: z.string().trim().min(1, "Please tell us about your needs").max(1000, "Message must be less than 1000 characters"),
 });
 
 const Contact = () => {
   const { toast } = useToast();
   const [formData, setFormData] = useState({
-    name: "",
+    firstName: "",
+    lastName: "",
     email: "",
-    message: "",
+    phone: "",
+    company: "",
+    budget: "",
+    needs: "",
   });
   const [isSubmitting, setIsSubmitting] = useState(false);
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     
-    // Validate input
     const validation = contactSchema.safeParse(formData);
     if (!validation.success) {
       toast({
@@ -39,9 +46,13 @@ const Contact = () => {
       const { error } = await supabase
         .from('leads')
         .insert({
-          name: validation.data.name,
+          first_name: validation.data.firstName,
+          last_name: validation.data.lastName,
           email: validation.data.email,
-          message: validation.data.message,
+          phone: validation.data.phone,
+          company: validation.data.company,
+          budget: validation.data.budget,
+          needs: validation.data.needs,
         });
 
       if (error) throw error;
@@ -50,7 +61,7 @@ const Contact = () => {
         title: "MESSAGE SENT",
         description: "We'll get back to you within 24 hours.",
       });
-      setFormData({ name: "", email: "", message: "" });
+      setFormData({ firstName: "", lastName: "", email: "", phone: "", company: "", budget: "", needs: "" });
     } catch (error) {
       console.error('Error submitting lead:', error);
       toast({
@@ -90,6 +101,8 @@ const Contact = () => {
     },
   ];
 
+  const inputClass = "w-full brutalist-border bg-card/50 text-foreground px-4 py-3 draincore-font focus:outline-none focus:shadow-[0_0_15px_hsl(0_0%_100%/0.3)] transition-all placeholder:text-muted-foreground";
+
   return (
     <section id="contact" className="relative px-6 py-20 border-t border-foreground/30">
       <div className="max-w-4xl mx-auto">
@@ -97,9 +110,9 @@ const Contact = () => {
         <div className="text-center mb-16">
           <h2 
             className="text-4xl md:text-5xl lg:text-6xl gothic-text text-foreground mb-4 glitch-effect tracking-widest drop-shadow-[0_0_15px_hsl(0_0%_100%/0.4)]" 
-            data-text="INITIATE CONTACT"
+            data-text="HOW CAN WE HELP?"
           >
-            INITIATE CONTACT
+            HOW CAN WE HELP?
           </h2>
           <div className="w-32 h-px bg-gradient-to-r from-transparent via-foreground/80 to-transparent mx-auto shadow-[0_0_10px_hsl(0_0%_100%/0.6)]" />
         </div>
@@ -128,41 +141,99 @@ const Contact = () => {
           <div className="absolute inset-0 bg-gradient-to-br from-foreground/10 to-transparent" />
           
           <form onSubmit={handleSubmit} className="space-y-6 relative z-10">
+            {/* Row 1: First Name, Last Name */}
             <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
               <div>
-                <label className="draincore-font text-primary/80 mb-2 block text-sm">NAME</label>
+                <label className="draincore-font text-primary/80 mb-2 block text-sm">FIRST NAME *</label>
                 <input 
                   type="text"
-                  value={formData.name}
-                  onChange={(e) => setFormData({ ...formData, name: e.target.value })}
-                  className="w-full brutalist-border bg-card/50 text-foreground px-4 py-3 draincore-font focus:outline-none focus:shadow-[0_0_15px_hsl(0_0%_100%/0.3)] transition-all placeholder:text-muted-foreground"
-                  placeholder="Your name"
+                  value={formData.firstName}
+                  onChange={(e) => setFormData({ ...formData, firstName: e.target.value })}
+                  className={inputClass}
+                  placeholder="John"
                   required
                   disabled={isSubmitting}
                 />
               </div>
               <div>
-                <label className="draincore-font text-primary/80 mb-2 block text-sm">EMAIL</label>
+                <label className="draincore-font text-primary/80 mb-2 block text-sm">LAST NAME *</label>
+                <input 
+                  type="text"
+                  value={formData.lastName}
+                  onChange={(e) => setFormData({ ...formData, lastName: e.target.value })}
+                  className={inputClass}
+                  placeholder="Doe"
+                  required
+                  disabled={isSubmitting}
+                />
+              </div>
+            </div>
+
+            {/* Row 2: Email, Phone */}
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+              <div>
+                <label className="draincore-font text-primary/80 mb-2 block text-sm">EMAIL *</label>
                 <input 
                   type="email"
                   value={formData.email}
                   onChange={(e) => setFormData({ ...formData, email: e.target.value })}
-                  className="w-full brutalist-border bg-card/50 text-foreground px-4 py-3 draincore-font focus:outline-none focus:shadow-[0_0_15px_hsl(0_0%_100%/0.3)] transition-all placeholder:text-muted-foreground"
-                  placeholder="your@email.com"
+                  className={inputClass}
+                  placeholder="john@company.com"
+                  required
+                  disabled={isSubmitting}
+                />
+              </div>
+              <div>
+                <label className="draincore-font text-primary/80 mb-2 block text-sm">PHONE *</label>
+                <input 
+                  type="tel"
+                  value={formData.phone}
+                  onChange={(e) => setFormData({ ...formData, phone: e.target.value })}
+                  className={inputClass}
+                  placeholder="(555) 123-4567"
+                  required
+                  disabled={isSubmitting}
+                />
+              </div>
+            </div>
+
+            {/* Row 3: Company, Budget */}
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+              <div>
+                <label className="draincore-font text-primary/80 mb-2 block text-sm">COMPANY *</label>
+                <input 
+                  type="text"
+                  value={formData.company}
+                  onChange={(e) => setFormData({ ...formData, company: e.target.value })}
+                  className={inputClass}
+                  placeholder="Your company name"
+                  required
+                  disabled={isSubmitting}
+                />
+              </div>
+              <div>
+                <label className="draincore-font text-primary/80 mb-2 block text-sm">YOUR BUDGET *</label>
+                <input 
+                  type="text"
+                  value={formData.budget}
+                  onChange={(e) => setFormData({ ...formData, budget: e.target.value })}
+                  className={inputClass}
+                  placeholder="$5,000 - $10,000"
                   required
                   disabled={isSubmitting}
                 />
               </div>
             </div>
             
+            {/* Row 4: Needs */}
             <div>
-              <label className="draincore-font text-primary/80 mb-2 block text-sm">MESSAGE</label>
+              <label className="draincore-font text-primary/80 mb-2 block text-sm">TELL ME ABOUT YOUR NEEDS *</label>
               <textarea 
                 rows={6}
-                value={formData.message}
-                onChange={(e) => setFormData({ ...formData, message: e.target.value })}
-                className="w-full brutalist-border bg-card/50 text-foreground px-4 py-3 draincore-font focus:outline-none focus:shadow-[0_0_15px_hsl(0_0%_100%/0.3)] transition-all resize-none placeholder:text-muted-foreground"
-                placeholder="Tell us about your project..."
+                value={formData.needs}
+                onChange={(e) => setFormData({ ...formData, needs: e.target.value })}
+                className={`${inputClass} resize-none`}
+                placeholder="Describe your project, goals, and any specific requirements..."
                 required
                 disabled={isSubmitting}
               />
@@ -173,7 +244,7 @@ const Contact = () => {
               disabled={isSubmitting}
               className="w-full brutalist-border bg-foreground text-background hover:bg-foreground/90 py-4 draincore-font transition-all duration-300 shadow-[0_0_20px_hsl(0_0%_100%/0.8)] hover:shadow-[0_0_30px_hsl(0_0%_100%)] disabled:opacity-50 disabled:cursor-not-allowed"
             >
-              {isSubmitting ? "SENDING..." : "SEND MESSAGE"}
+              {isSubmitting ? "SENDING..." : "SUBMIT"}
             </button>
           </form>
 

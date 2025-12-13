@@ -16,25 +16,37 @@ export type Database = {
     Tables: {
       leads: {
         Row: {
+          budget: string
+          company: string
           created_at: string
           email: string
+          first_name: string
           id: string
-          message: string
-          name: string
+          last_name: string
+          needs: string
+          phone: string
         }
         Insert: {
+          budget: string
+          company: string
           created_at?: string
           email: string
+          first_name: string
           id?: string
-          message: string
-          name: string
+          last_name: string
+          needs: string
+          phone: string
         }
         Update: {
+          budget?: string
+          company?: string
           created_at?: string
           email?: string
+          first_name?: string
           id?: string
-          message?: string
-          name?: string
+          last_name?: string
+          needs?: string
+          phone?: string
         }
         Relationships: []
       }
