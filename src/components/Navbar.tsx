@@ -10,6 +10,7 @@ const Navbar = () => {
   const navLinks = [
     { id: 'services', label: 'SERVICES' },
     { id: 'pricing', label: 'PRICING' },
+    { id: 'proposals', label: 'GET PROPOSAL', href: '/proposals' },
     { id: 'contact', label: 'CONTACT' },
   ];
 
@@ -36,8 +37,15 @@ const Navbar = () => {
           {navLinks.map((link) => (
             <a 
               key={link.id}
-              href={`#${link.id}`}
-              onClick={(e) => scrollToSection(e, link.id)}
+              href={link.href || `#${link.id}`}
+              onClick={(e) => {
+                if (link.href) {
+                  e.preventDefault();
+                  window.location.href = link.href;
+                } else {
+                  scrollToSection(e, link.id);
+                }
+              }}
               className="text-primary hover:text-foreground transition-colors duration-300 hover:drop-shadow-[0_0_10px_hsl(0_0%_100%/0.8)]"
             >
               {link.label}

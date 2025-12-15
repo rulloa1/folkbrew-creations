@@ -1,4 +1,4 @@
-import { Mail, Phone, MapPin } from "lucide-react";
+import { Mail, Phone, MapPin, MessageCircle } from "lucide-react";
 import { useState } from "react";
 import { useToast } from "@/hooks/use-toast";
 import { supabase } from "@/integrations/supabase/client";
@@ -99,6 +99,15 @@ const Contact = () => {
       decorationClass: "w-4 h-4",
     },
     {
+      icon: MessageCircle,
+      label: "Telegram",
+      value: "@royalsolutions_ai",
+      link: "https://t.me/royalsolutions_ai",
+      decoration: "drain-spike",
+      decorationStyle: { top: '0.5rem', right: '0.5rem' },
+      decorationClass: "w-3 h-4 rotate-[150deg]",
+    },
+    {
       icon: MapPin,
       label: "Location",
       value: "Remote // Worldwide",
@@ -125,7 +134,7 @@ const Contact = () => {
         </div>
 
         {/* Contact info cards */}
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-8 mb-12">
+        <div className="grid grid-cols-1 md:grid-cols-4 gap-8 mb-12">
           {contactInfo.map((info, index) => (
             <div 
               key={index} 
@@ -134,7 +143,18 @@ const Contact = () => {
               <div className="absolute inset-0 bg-gradient-to-br from-foreground/10 to-transparent" />
               <info.icon className="w-8 h-8 text-foreground mx-auto mb-4 drop-shadow-[0_0_15px_hsl(0_0%_100%/0.8)]" />
               <h3 className="gothic-text text-foreground mb-2">{info.label}</h3>
-              <p className="text-primary/70 draincore-font text-sm break-all">{info.value}</p>
+              {info.link ? (
+                <a
+                  href={info.link}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="text-blue-400 hover:text-blue-300 draincore-font text-sm break-all transition-colors"
+                >
+                  {info.value}
+                </a>
+              ) : (
+                <p className="text-primary/70 draincore-font text-sm break-all">{info.value}</p>
+              )}
               <div 
                 className={`absolute ${info.decoration} ${info.decorationClass}`} 
                 style={{ ...info.decorationStyle, animationDelay: `${0.5 + index * 0.7}s` }} 
