@@ -1,4 +1,5 @@
 import { serve } from "https://deno.land/std@0.168.0/http/server.ts";
+import { createClient } from "https://esm.sh/@supabase/supabase-js@2";
 
 const corsHeaders = {
   'Access-Control-Allow-Origin': '*',
@@ -7,6 +8,10 @@ const corsHeaders = {
 
 const TELEGRAM_BOT_TOKEN = Deno.env.get('TELEGRAM_BOT_TOKEN');
 const LOVABLE_API_KEY = Deno.env.get('LOVABLE_API_KEY');
+const SUPABASE_URL = Deno.env.get('SUPABASE_URL');
+const SUPABASE_SERVICE_ROLE_KEY = Deno.env.get('SUPABASE_SERVICE_ROLE_KEY');
+
+const supabase = createClient(SUPABASE_URL!, SUPABASE_SERVICE_ROLE_KEY!);
 
 const SYSTEM_PROMPT = `You are RoyAI, the AI sales assistant for RoyAISolutions. You're friendly, professional, and knowledgeable about our services.
 
@@ -76,6 +81,27 @@ async function sendTelegramMessage(chatId: number, text: string) {
       parse_mode: 'Markdown',
     }),
   });
+}
+
+async function logChatMessage(chatId: number, userName: string, userMessage: string, botResponse: string) {
+  try {
+    const { error } = await supabase
+      .from('telegram_chats')
+      .insert({
+        chat_id: chatId,
+        user_name: userName,
+        user_message: userMessage,
+        bot_response: botResponse,
+      });
+    
+    if (error) {
+      console.error('Error logging chat message:', error);
+    } else {
+      console.log(`Logged chat from ${userName} (${chatId})`);
+    }
+  } catch (error) {
+    console.error('Error in logChatMessage:', error);
+  }
 }
 
 async function getAIResponse(userMessage: string, userName: string): Promise<string> {
@@ -156,10 +182,16 @@ I'm RoyAI, your AI sales assistant. I'm here to help you discover how we can aut
 Ready to transform your business? Let's chat! 🎯`;
       
       await sendTelegramMessage(chatId, welcomeMessage);
+      
+      // Log the /start interaction
+      await logChatMessage(chatId, userName, userMessage, welcomeMessage);
     } else {
       // Get AI response for other messages
       const aiResponse = await getAIResponse(userMessage, userName);
       await sendTelegramMessage(chatId, aiResponse);
+      
+      // Log the conversation
+      await logChatMessage(chatId, userName, userMessage, aiResponse);
     }
 
     return new Response(JSON.stringify({ ok: true }), {
