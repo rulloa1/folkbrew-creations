@@ -19,34 +19,34 @@ export type Database = {
           budget: string
           company: string
           created_at: string
-          email: string
           first_name: string
           id: string
           last_name: string
           needs: string
           phone: string
+          telegram: string
         }
         Insert: {
           budget: string
           company: string
           created_at?: string
-          email: string
           first_name: string
           id?: string
           last_name: string
           needs: string
           phone: string
+          telegram?: string
         }
         Update: {
           budget?: string
           company?: string
           created_at?: string
-          email?: string
           first_name?: string
           id?: string
           last_name?: string
           needs?: string
           phone?: string
+          telegram?: string
         }
         Relationships: []
       }
