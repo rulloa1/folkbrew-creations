@@ -3,13 +3,13 @@ import { useNavigate } from 'react-router-dom';
 import { useAuth } from '@/hooks/useAuth';
 import { supabase } from '@/integrations/supabase/client';
 import { useToast } from '@/hooks/use-toast';
-import { LogOut, Mail, Phone, Building, DollarSign, Calendar, Trash2, User } from 'lucide-react';
+import { LogOut, MessageCircle, Phone, Building, DollarSign, Calendar, Trash2, User } from 'lucide-react';
 
 interface Lead {
   id: string;
   first_name: string;
   last_name: string;
-  email: string;
+  telegram: string;
   phone: string;
   company: string;
   budget: string;
@@ -191,8 +191,8 @@ const Admin = () => {
                   {/* Details Grid */}
                   <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4 mb-4">
                     <div className="flex items-center gap-2 text-primary/80">
-                      <Mail className="w-4 h-4" />
-                      <span className="draincore-font text-sm truncate">{lead.email}</span>
+                      <MessageCircle className="w-4 h-4" />
+                      <span className="draincore-font text-sm truncate">{lead.telegram}</span>
                     </div>
                     <div className="flex items-center gap-2 text-primary/80">
                       <Phone className="w-4 h-4" />

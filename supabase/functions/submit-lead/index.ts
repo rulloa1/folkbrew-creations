@@ -41,7 +41,7 @@ setInterval(() => {
 interface LeadData {
   firstName: string;
   lastName: string;
-  email: string;
+  telegram: string;
   phone: string;
   company: string;
   budget: string;
@@ -92,8 +92,8 @@ serve(async (req) => {
     if (!body.lastName?.trim() || body.lastName.length > 50) {
       errors.push('Last name is required and must be less than 50 characters');
     }
-    if (!body.email?.trim() || !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(body.email) || body.email.length > 255) {
-      errors.push('Valid email is required');
+    if (!body.telegram?.trim() || body.telegram.length > 100) {
+      errors.push('Telegram username is required and must be less than 100 characters');
     }
     if (!body.phone?.trim() || body.phone.length > 20) {
       errors.push('Phone is required and must be less than 20 characters');
@@ -127,7 +127,7 @@ serve(async (req) => {
       .insert({
         first_name: body.firstName.trim(),
         last_name: body.lastName.trim(),
-        email: body.email.trim().toLowerCase(),
+        telegram: body.telegram.trim(),
         phone: body.phone.trim(),
         company: body.company.trim(),
         budget: body.budget.trim(),

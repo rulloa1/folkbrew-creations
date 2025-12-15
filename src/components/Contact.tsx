@@ -1,4 +1,4 @@
-import { Mail, Phone, MapPin, MessageCircle } from "lucide-react";
+import { Phone, MapPin, MessageCircle } from "lucide-react";
 import { useState } from "react";
 import { useToast } from "@/hooks/use-toast";
 import { supabase } from "@/integrations/supabase/client";
@@ -7,7 +7,7 @@ import { z } from "zod";
 const contactSchema = z.object({
   firstName: z.string().trim().min(1, "First name is required").max(50, "First name must be less than 50 characters"),
   lastName: z.string().trim().min(1, "Last name is required").max(50, "Last name must be less than 50 characters"),
-  email: z.string().trim().email("Invalid email address").max(255, "Email must be less than 255 characters"),
+  telegram: z.string().trim().min(1, "Telegram username is required").max(100, "Telegram must be less than 100 characters"),
   phone: z.string().trim().min(1, "Phone is required").max(20, "Phone must be less than 20 characters"),
   company: z.string().trim().min(1, "Company is required").max(100, "Company must be less than 100 characters"),
   budget: z.string().trim().min(1, "Budget is required").max(50, "Budget must be less than 50 characters"),
@@ -19,7 +19,7 @@ const Contact = () => {
   const [formData, setFormData] = useState({
     firstName: "",
     lastName: "",
-    email: "",
+    telegram: "",
     phone: "",
     company: "",
     budget: "",
@@ -47,7 +47,7 @@ const Contact = () => {
         body: {
           firstName: validation.data.firstName,
           lastName: validation.data.lastName,
-          email: validation.data.email,
+          telegram: validation.data.telegram,
           phone: validation.data.phone,
           company: validation.data.company,
           budget: validation.data.budget,
@@ -65,7 +65,7 @@ const Contact = () => {
         title: "MESSAGE SENT",
         description: "We'll get back to you within 24 hours.",
       });
-      setFormData({ firstName: "", lastName: "", email: "", phone: "", company: "", budget: "", needs: "" });
+      setFormData({ firstName: "", lastName: "", telegram: "", phone: "", company: "", budget: "", needs: "" });
     } catch (error) {
       const message = error instanceof Error ? error.message : "Failed to send message. Please try again.";
       if (import.meta.env.DEV) {
@@ -82,14 +82,6 @@ const Contact = () => {
   };
 
   const contactInfo = [
-    {
-      icon: Mail,
-      label: "Email",
-      value: "roryulloa@gmail.com",
-      decoration: "drain-spike",
-      decorationStyle: { top: '0.5rem', right: '0.5rem' },
-      decorationClass: "w-3 h-4 rotate-[30deg]",
-    },
     {
       icon: Phone,
       label: "Phone",
@@ -134,7 +126,7 @@ const Contact = () => {
         </div>
 
         {/* Contact info cards */}
-        <div className="grid grid-cols-1 md:grid-cols-4 gap-8 mb-12">
+        <div className="grid grid-cols-1 md:grid-cols-3 gap-8 mb-12">
           {contactInfo.map((info, index) => (
             <div 
               key={index} 
@@ -196,35 +188,35 @@ const Contact = () => {
               </div>
             </div>
 
-            {/* Row 2: Email, Phone */}
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-              <div>
-                <label className="draincore-font text-primary/80 mb-2 block text-sm">EMAIL *</label>
-                <input 
-                  type="email"
-                  value={formData.email}
-                  onChange={(e) => setFormData({ ...formData, email: e.target.value })}
-                  className={inputClass}
-                  placeholder="john@company.com"
-                  required
-                  disabled={isSubmitting}
-                />
-              </div>
-              <div>
-                <label className="draincore-font text-primary/80 mb-2 block text-sm">PHONE *</label>
-                <input 
-                  type="tel"
-                  value={formData.phone}
-                  onChange={(e) => setFormData({ ...formData, phone: e.target.value })}
-                  className={inputClass}
-                  placeholder="(555) 123-4567"
-                  required
-                  disabled={isSubmitting}
-                />
-              </div>
+            {/* Row 2: Telegram */}
+            <div>
+              <label className="draincore-font text-primary/80 mb-2 block text-sm">TELEGRAM USERNAME *</label>
+              <input 
+                type="text"
+                value={formData.telegram}
+                onChange={(e) => setFormData({ ...formData, telegram: e.target.value })}
+                className={inputClass}
+                placeholder="@yourusername"
+                required
+                disabled={isSubmitting}
+              />
             </div>
 
-            {/* Row 3: Company, Budget */}
+            {/* Row 3: Phone */}
+            <div>
+              <label className="draincore-font text-primary/80 mb-2 block text-sm">PHONE *</label>
+              <input 
+                type="tel"
+                value={formData.phone}
+                onChange={(e) => setFormData({ ...formData, phone: e.target.value })}
+                className={inputClass}
+                placeholder="(555) 123-4567"
+                required
+                disabled={isSubmitting}
+              />
+            </div>
+
+            {/* Row 4: Company, Budget */}
             <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
               <div>
                 <label className="draincore-font text-primary/80 mb-2 block text-sm">COMPANY *</label>
@@ -252,7 +244,7 @@ const Contact = () => {
               </div>
             </div>
             
-            {/* Row 4: Needs */}
+            {/* Row 5: Needs */}
             <div>
               <label className="draincore-font text-primary/80 mb-2 block text-sm">TELL ME ABOUT YOUR NEEDS *</label>
               <textarea 
