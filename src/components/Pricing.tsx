@@ -1,6 +1,12 @@
 import { LayoutGrid, Zap, ArrowUp } from "lucide-react";
 
 const Pricing = () => {
+  const scrollToContact = () => {
+    const element = document.getElementById('contact');
+    if (element) {
+      element.scrollIntoView({ behavior: 'smooth', block: 'start' });
+    }
+  };
   const foundationFeatures = [
     "Premium Website Design",
     "Fully Responsive",
@@ -72,7 +78,10 @@ const Pricing = () => {
                 ))}
               </ul>
 
-              <button className="w-full brutalist-border bg-foreground/10 hover:bg-foreground/20 text-foreground py-4 draincore-font transition-all duration-300 hover:shadow-[0_0_20px_hsl(0_0%_100%/0.5)]">
+              <button 
+                onClick={scrollToContact}
+                className="w-full brutalist-border bg-foreground/10 hover:bg-foreground/20 text-foreground py-4 draincore-font transition-all duration-300 hover:shadow-[0_0_20px_hsl(0_0%_100%/0.5)]"
+              >
                 GET STARTED
               </button>
               
@@ -122,7 +131,10 @@ const Pricing = () => {
                 ))}
               </ul>
 
-              <button className="w-full brutalist-border bg-foreground text-background hover:bg-foreground/90 py-4 draincore-font transition-all duration-300 shadow-[0_0_20px_hsl(0_0%_100%/0.8)] hover:shadow-[0_0_30px_hsl(0_0%_100%)]">
+              <button 
+                onClick={scrollToContact}
+                className="w-full brutalist-border bg-foreground text-background hover:bg-foreground/90 py-4 draincore-font transition-all duration-300 shadow-[0_0_20px_hsl(0_0%_100%/0.8)] hover:shadow-[0_0_30px_hsl(0_0%_100%)]"
+              >
                 START TRANSFORMATION
               </button>
               
