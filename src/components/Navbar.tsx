@@ -28,7 +28,7 @@ const Navbar = () => {
   const navLinks = [
     { id: 'services', label: 'SERVICES' },
     { id: 'pricing', label: 'PRICING' },
-    { id: 'proposals', label: 'GET PROPOSAL', href: '/proposals' },
+    { id: 'testimonials', label: 'REVIEWS', href: '/testimonials' },
     { id: 'contact', label: 'CONTACT' },
   ];
 
