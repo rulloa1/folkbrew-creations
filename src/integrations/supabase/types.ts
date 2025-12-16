@@ -50,6 +50,113 @@ export type Database = {
         }
         Relationships: []
       }
+      payments: {
+        Row: {
+          amount: number
+          client_email: string
+          client_name: string
+          created_at: string
+          id: string
+          payment_type: string
+          proposal_id: string
+          status: string
+          stripe_checkout_session_id: string | null
+          stripe_payment_intent_id: string | null
+        }
+        Insert: {
+          amount: number
+          client_email: string
+          client_name: string
+          created_at?: string
+          id?: string
+          payment_type: string
+          proposal_id: string
+          status?: string
+          stripe_checkout_session_id?: string | null
+          stripe_payment_intent_id?: string | null
+        }
+        Update: {
+          amount?: number
+          client_email?: string
+          client_name?: string
+          created_at?: string
+          id?: string
+          payment_type?: string
+          proposal_id?: string
+          status?: string
+          stripe_checkout_session_id?: string | null
+          stripe_payment_intent_id?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "payments_proposal_id_fkey"
+            columns: ["proposal_id"]
+            isOneToOne: false
+            referencedRelation: "proposals"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      proposals: {
+        Row: {
+          budget: string
+          company_name: string
+          created_at: string
+          current_challenges: string | null
+          email: string
+          first_name: string
+          id: string
+          industry: string | null
+          last_name: string
+          monthly_total: number
+          one_time_total: number
+          phone: string
+          proposal_number: string
+          requirements: string
+          services: Json
+          status: string
+          timeline: string
+        }
+        Insert: {
+          budget: string
+          company_name: string
+          created_at?: string
+          current_challenges?: string | null
+          email: string
+          first_name: string
+          id?: string
+          industry?: string | null
+          last_name: string
+          monthly_total?: number
+          one_time_total?: number
+          phone: string
+          proposal_number: string
+          requirements: string
+          services?: Json
+          status?: string
+          timeline: string
+        }
+        Update: {
+          budget?: string
+          company_name?: string
+          created_at?: string
+          current_challenges?: string | null
+          email?: string
+          first_name?: string
+          id?: string
+          industry?: string | null
+          last_name?: string
+          monthly_total?: number
+          one_time_total?: number
+          phone?: string
+          proposal_number?: string
+          requirements?: string
+          services?: Json
+          status?: string
+          timeline?: string
+        }
+        Relationships: []
+      }
       telegram_chats: {
         Row: {
           bot_response: string

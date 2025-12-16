@@ -1,5 +1,6 @@
 import { useState } from 'react';
-import { FileText, Download, Send, AlertCircle, CheckCircle } from 'lucide-react';
+import { useNavigate } from 'react-router-dom';
+import { FileText, Send, CheckCircle, Zap, Bot, Users } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
@@ -7,20 +8,23 @@ import { Textarea } from '@/components/ui/textarea';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { Checkbox } from '@/components/ui/checkbox';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
-import { Alert, AlertDescription } from '@/components/ui/alert';
 import { useToast } from '@/hooks/use-toast';
+import { supabase } from '@/integrations/supabase/client';
+import Navbar from '@/components/Navbar';
+import Footer from '@/components/Footer';
 
 interface Service {
   id: string;
   label: string;
   price: number;
   period?: string;
+  icon: React.ReactNode;
 }
 
 const SERVICES: Service[] = [
-  { id: 'web', label: 'Web Development', price: 2500 },
-  { id: 'automation', label: 'AI Automation', price: 997, period: '/month' },
-  { id: 'leads', label: 'Lead Generation', price: 750, period: '/month' },
+  { id: 'web', label: 'Web Development', price: 2500, icon: <Zap className="w-5 h-5" /> },
+  { id: 'automation', label: 'AI Automation', price: 997, period: '/month', icon: <Bot className="w-5 h-5" /> },
+  { id: 'leads', label: 'Lead Generation', price: 750, period: '/month', icon: <Users className="w-5 h-5" /> },
 ];
 
 const BUDGET_RANGES = [
@@ -58,6 +62,7 @@ interface FormErrors {
 
 export default function Proposals() {
   const { toast } = useToast();
+  const navigate = useNavigate();
   const [formData, setFormData] = useState<FormData>({
     firstName: '',
     lastName: '',
@@ -74,7 +79,24 @@ export default function Proposals() {
 
   const [errors, setErrors] = useState<FormErrors>({});
   const [isSubmitting, setIsSubmitting] = useState(false);
-  const [generatedProposal, setGeneratedProposal] = useState<any>(null);
+
+  const calculatePricing = () => {
+    let oneTime = 0;
+    let monthly = 0;
+    
+    formData.services.forEach(serviceId => {
+      const service = SERVICES.find(s => s.id === serviceId);
+      if (service) {
+        if (service.period) {
+          monthly += service.price;
+        } else {
+          oneTime += service.price;
+        }
+      }
+    });
+    
+    return { oneTime, monthly };
+  };
 
   const validateForm = (): boolean => {
     const newErrors: FormErrors = {};
@@ -88,7 +110,9 @@ export default function Proposals() {
     if (formData.services.length === 0) newErrors.services = 'Select at least one service';
     if (!formData.budget) newErrors.budget = 'Budget range is required';
     if (!formData.timeline) newErrors.timeline = 'Timeline is required';
-    if (!formData.requirements.trim()) newErrors.requirements = 'Please describe your requirements';
+    if (!formData.requirements.trim() || formData.requirements.length < 10) {
+      newErrors.requirements = 'Please describe your requirements (minimum 10 characters)';
+    }
 
     setErrors(newErrors);
     return Object.keys(newErrors).length === 0;
@@ -129,40 +153,51 @@ export default function Proposals() {
     setIsSubmitting(true);
 
     try {
+      const { oneTime, monthly } = calculatePricing();
+      const proposalNumber = `PROP-${Date.now()}`;
       const selectedServices = SERVICES.filter(s => formData.services.includes(s.id));
 
-      // For now, we'll simulate a successful submission
-      // In production, this would call your backend API
-      const proposalId = `PROP-${Date.now()}`;
-      
-      // Simulate API call
-      await new Promise(resolve => setTimeout(resolve, 2000));
+      // Insert proposal into database
+      const { data: proposal, error } = await supabase
+        .from('proposals')
+        .insert({
+          proposal_number: proposalNumber,
+          first_name: formData.firstName,
+          last_name: formData.lastName,
+          email: formData.email,
+          phone: formData.phone,
+          company_name: formData.companyName,
+          industry: formData.industry || null,
+          services: selectedServices.map(s => ({
+            id: s.id,
+            label: s.label,
+            price: s.price,
+            period: s.period || null,
+          })),
+          budget: formData.budget,
+          timeline: formData.timeline,
+          requirements: formData.requirements,
+          current_challenges: formData.currentChallenges || null,
+          one_time_total: oneTime * 100, // Store in cents
+          monthly_total: monthly * 100,
+        })
+        .select()
+        .single();
 
-      setGeneratedProposal({ proposalId });
-      
+      if (error) throw error;
+
       toast({
-        title: 'Success!',
-        description: 'Proposal request submitted successfully. We will contact you soon!',
+        title: 'Proposal Generated!',
+        description: 'Your custom proposal is ready. Redirecting to preview...',
       });
 
-      // Reset form
-      setFormData({
-        firstName: '',
-        lastName: '',
-        email: '',
-        phone: '',
-        companyName: '',
-        industry: '',
-        services: [],
-        budget: '',
-        timeline: '',
-        requirements: '',
-        currentChallenges: '',
-      });
-    } catch (error) {
+      // Navigate to proposal preview
+      navigate(`/proposal/${proposal.id}`);
+    } catch (error: any) {
+      console.error('Error creating proposal:', error);
       toast({
         title: 'Error',
-        description: 'Failed to submit proposal request. Please try again.',
+        description: 'Failed to generate proposal. Please try again.',
         variant: 'destructive',
       });
     } finally {
@@ -170,263 +205,275 @@ export default function Proposals() {
     }
   };
 
+  const { oneTime, monthly } = calculatePricing();
+
   return (
-    <div className="min-h-screen bg-gradient-to-br from-slate-50 to-slate-100 py-12 px-4">
-      <div className="max-w-4xl mx-auto">
-        {/* Header */}
-        <div className="text-center mb-12">
-          <div className="flex items-center justify-center gap-3 mb-4">
-            <FileText className="text-blue-600" size={32} />
-            <h1 className="text-4xl font-bold text-gray-900">Proposal Generator</h1>
+    <div className="min-h-screen bg-background">
+      <Navbar />
+      
+      <main className="pt-24 pb-16 px-4">
+        <div className="max-w-4xl mx-auto">
+          {/* Header */}
+          <div className="text-center mb-12">
+            <div className="flex items-center justify-center gap-3 mb-4">
+              <div className="drain-sharp-star" style={{ position: 'relative', width: '32px', height: '32px' }} />
+              <h1 className="text-4xl font-bold draincore-font glitch-effect" data-text="PROPOSAL GENERATOR">
+                PROPOSAL GENERATOR
+              </h1>
+            </div>
+            <p className="text-muted-foreground text-lg font-mono tracking-wider">
+              Get a customized proposal for your business needs
+            </p>
           </div>
-          <p className="text-gray-600 text-lg">
-            Get a customized proposal for your business needs in minutes
-          </p>
-        </div>
 
-        {/* Status Messages */}
-        {generatedProposal && (
-          <Alert className="mb-8 bg-green-50 border-green-200">
-            <CheckCircle className="h-4 w-4 text-green-600" />
-            <AlertDescription className="text-green-800">
-              Proposal request submitted successfully! We will contact you at {formData.email} shortly.
-            </AlertDescription>
-          </Alert>
-        )}
-
-        {/* Form */}
-        <Card className="shadow-lg">
-          <CardHeader className="bg-gradient-to-r from-blue-50 to-indigo-50 border-b">
-            <CardTitle>Business Information</CardTitle>
-            <CardDescription>Tell us about your project and requirements</CardDescription>
-          </CardHeader>
-          <CardContent className="pt-8">
-            <form onSubmit={handleSubmit} className="space-y-8">
-              {/* Personal Information */}
-              <div>
-                <h3 className="text-lg font-semibold text-gray-900 mb-6">Your Information</h3>
-                <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-                  <div>
-                    <Label htmlFor="firstName">First Name *</Label>
-                    <Input
-                      id="firstName"
-                      name="firstName"
-                      value={formData.firstName}
-                      onChange={handleInputChange}
-                      placeholder="John"
-                      className={errors.firstName ? 'border-red-500' : ''}
-                    />
-                    {errors.firstName && <p className="text-red-500 text-sm mt-1">{errors.firstName}</p>}
-                  </div>
-
-                  <div>
-                    <Label htmlFor="lastName">Last Name *</Label>
-                    <Input
-                      id="lastName"
-                      name="lastName"
-                      value={formData.lastName}
-                      onChange={handleInputChange}
-                      placeholder="Doe"
-                      className={errors.lastName ? 'border-red-500' : ''}
-                    />
-                    {errors.lastName && <p className="text-red-500 text-sm mt-1">{errors.lastName}</p>}
-                  </div>
-
-                  <div>
-                    <Label htmlFor="email">Email *</Label>
-                    <Input
-                      id="email"
-                      name="email"
-                      type="email"
-                      value={formData.email}
-                      onChange={handleInputChange}
-                      placeholder="john@company.com"
-                      className={errors.email ? 'border-red-500' : ''}
-                    />
-                    {errors.email && <p className="text-red-500 text-sm mt-1">{errors.email}</p>}
-                  </div>
-
-                  <div>
-                    <Label htmlFor="phone">Phone *</Label>
-                    <Input
-                      id="phone"
-                      name="phone"
-                      type="tel"
-                      value={formData.phone}
-                      onChange={handleInputChange}
-                      placeholder="(555) 123-4567"
-                      className={errors.phone ? 'border-red-500' : ''}
-                    />
-                    {errors.phone && <p className="text-red-500 text-sm mt-1">{errors.phone}</p>}
-                  </div>
-
-                  <div className="md:col-span-2">
-                    <Label htmlFor="companyName">Company Name *</Label>
-                    <Input
-                      id="companyName"
-                      name="companyName"
-                      value={formData.companyName}
-                      onChange={handleInputChange}
-                      placeholder="Your company name"
-                      className={errors.companyName ? 'border-red-500' : ''}
-                    />
-                    {errors.companyName && <p className="text-red-500 text-sm mt-1">{errors.companyName}</p>}
-                  </div>
-
-                  <div className="md:col-span-2">
-                    <Label htmlFor="industry">Industry</Label>
-                    <Input
-                      id="industry"
-                      name="industry"
-                      value={formData.industry}
-                      onChange={handleInputChange}
-                      placeholder="e.g., SaaS, E-commerce, Healthcare"
-                    />
-                  </div>
-                </div>
-              </div>
-
-              {/* Services Selection */}
-              <div>
-                <h3 className="text-lg font-semibold text-gray-900 mb-6">Services Needed *</h3>
-                {errors.services && <p className="text-red-500 text-sm mb-4">{errors.services}</p>}
-                <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-                  {SERVICES.map(service => (
-                    <div
-                      key={service.id}
-                      className={`p-4 border-2 rounded-lg cursor-pointer transition-all ${
-                        formData.services.includes(service.id)
-                          ? 'border-blue-500 bg-blue-50'
-                          : 'border-gray-200 bg-white hover:border-gray-300'
-                      }`}
-                      onClick={() => handleServiceChange(service.id)}
-                    >
-                      <div className="flex items-start gap-3">
-                        <Checkbox
-                          checked={formData.services.includes(service.id)}
-                          onCheckedChange={() => handleServiceChange(service.id)}
-                          className="mt-1"
-                        />
-                        <div>
-                          <p className="font-semibold text-gray-900">{service.label}</p>
-                          <p className="text-sm text-gray-600 mt-1">
-                            ${service.price.toLocaleString()}
-                            {service.period && <span>{service.period}</span>}
-                          </p>
-                        </div>
-                      </div>
-                    </div>
-                  ))}
-                </div>
-              </div>
-
-              {/* Budget & Timeline */}
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-                <div>
-                  <Label htmlFor="budget">Budget Range *</Label>
-                  <Select value={formData.budget} onValueChange={(value) => handleSelectChange('budget', value)}>
-                    <SelectTrigger className={errors.budget ? 'border-red-500' : ''}>
-                      <SelectValue placeholder="Select a budget range" />
-                    </SelectTrigger>
-                    <SelectContent>
-                      {BUDGET_RANGES.map(range => (
-                        <SelectItem key={range} value={range}>
-                          {range}
-                        </SelectItem>
-                      ))}
-                    </SelectContent>
-                  </Select>
-                  {errors.budget && <p className="text-red-500 text-sm mt-1">{errors.budget}</p>}
-                </div>
-
-                <div>
-                  <Label htmlFor="timeline">Timeline *</Label>
-                  <Select value={formData.timeline} onValueChange={(value) => handleSelectChange('timeline', value)}>
-                    <SelectTrigger className={errors.timeline ? 'border-red-500' : ''}>
-                      <SelectValue placeholder="Select a timeline" />
-                    </SelectTrigger>
-                    <SelectContent>
-                      {TIMELINES.map(timeline => (
-                        <SelectItem key={timeline} value={timeline}>
-                          {timeline}
-                        </SelectItem>
-                      ))}
-                    </SelectContent>
-                  </Select>
-                  {errors.timeline && <p className="text-red-500 text-sm mt-1">{errors.timeline}</p>}
-                </div>
-              </div>
-
-              {/* Requirements */}
-              <div>
-                <Label htmlFor="requirements">Project Requirements *</Label>
-                <Textarea
-                  id="requirements"
-                  name="requirements"
-                  value={formData.requirements}
-                  onChange={handleInputChange}
-                  placeholder="Describe your project requirements, goals, and specific needs..."
-                  className={`min-h-32 ${errors.requirements ? 'border-red-500' : ''}`}
-                />
-                {errors.requirements && <p className="text-red-500 text-sm mt-1">{errors.requirements}</p>}
-              </div>
-
-              {/* Current Challenges */}
-              <div>
-                <Label htmlFor="currentChallenges">Current Challenges (Optional)</Label>
-                <Textarea
-                  id="currentChallenges"
-                  name="currentChallenges"
-                  value={formData.currentChallenges}
-                  onChange={handleInputChange}
-                  placeholder="What challenges are you currently facing?"
-                  className="min-h-24"
-                />
-              </div>
-
-              {/* Submit Button */}
-              <Button
-                type="submit"
-                disabled={isSubmitting}
-                className="w-full bg-gradient-to-r from-blue-600 to-blue-700 hover:from-blue-700 hover:to-blue-800 text-white font-semibold py-3 h-auto"
-              >
-                {isSubmitting ? (
-                  <>
-                    <span className="animate-spin mr-2">⏳</span>
-                    Submitting...
-                  </>
-                ) : (
-                  <>
-                    <Send className="w-4 h-4 mr-2" />
-                    Request Proposal
-                  </>
-                )}
-              </Button>
-            </form>
-          </CardContent>
-        </Card>
-
-        {/* Generated Proposal Preview */}
-        {generatedProposal && (
-          <Card className="mt-8 shadow-lg">
-            <CardHeader className="bg-gradient-to-r from-green-50 to-emerald-50 border-b">
-              <CardTitle>Request Submitted</CardTitle>
-              <CardDescription>We'll contact you shortly with your custom proposal</CardDescription>
+          {/* Form */}
+          <Card className="glass-card brutalist-border">
+            <CardHeader className="border-b border-border">
+              <CardTitle className="draincore-font text-xl tracking-wider">
+                // BUSINESS INFORMATION
+              </CardTitle>
+              <CardDescription className="font-mono text-muted-foreground">
+                Tell us about your project and requirements
+              </CardDescription>
             </CardHeader>
             <CardContent className="pt-8">
-              <div className="space-y-4">
-                <div className="p-4 bg-blue-50 rounded-lg">
-                  <p className="text-sm text-gray-600">Request ID</p>
-                  <p className="text-lg font-semibold text-gray-900">{generatedProposal.proposalId}</p>
+              <form onSubmit={handleSubmit} className="space-y-8">
+                {/* Personal Information */}
+                <div>
+                  <h3 className="text-lg font-semibold draincore-font mb-6 text-primary">
+                    &gt; YOUR INFORMATION
+                  </h3>
+                  <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                    <div>
+                      <Label htmlFor="firstName" className="font-mono text-sm">First Name *</Label>
+                      <Input
+                        id="firstName"
+                        name="firstName"
+                        value={formData.firstName}
+                        onChange={handleInputChange}
+                        placeholder="John"
+                        className={`bg-input border-border font-mono ${errors.firstName ? 'border-destructive' : ''}`}
+                      />
+                      {errors.firstName && <p className="text-destructive text-sm mt-1 font-mono">{errors.firstName}</p>}
+                    </div>
+
+                    <div>
+                      <Label htmlFor="lastName" className="font-mono text-sm">Last Name *</Label>
+                      <Input
+                        id="lastName"
+                        name="lastName"
+                        value={formData.lastName}
+                        onChange={handleInputChange}
+                        placeholder="Doe"
+                        className={`bg-input border-border font-mono ${errors.lastName ? 'border-destructive' : ''}`}
+                      />
+                      {errors.lastName && <p className="text-destructive text-sm mt-1 font-mono">{errors.lastName}</p>}
+                    </div>
+
+                    <div>
+                      <Label htmlFor="email" className="font-mono text-sm">Email *</Label>
+                      <Input
+                        id="email"
+                        name="email"
+                        type="email"
+                        value={formData.email}
+                        onChange={handleInputChange}
+                        placeholder="john@company.com"
+                        className={`bg-input border-border font-mono ${errors.email ? 'border-destructive' : ''}`}
+                      />
+                      {errors.email && <p className="text-destructive text-sm mt-1 font-mono">{errors.email}</p>}
+                    </div>
+
+                    <div>
+                      <Label htmlFor="phone" className="font-mono text-sm">Phone *</Label>
+                      <Input
+                        id="phone"
+                        name="phone"
+                        type="tel"
+                        value={formData.phone}
+                        onChange={handleInputChange}
+                        placeholder="(555) 123-4567"
+                        className={`bg-input border-border font-mono ${errors.phone ? 'border-destructive' : ''}`}
+                      />
+                      {errors.phone && <p className="text-destructive text-sm mt-1 font-mono">{errors.phone}</p>}
+                    </div>
+
+                    <div className="md:col-span-2">
+                      <Label htmlFor="companyName" className="font-mono text-sm">Company Name *</Label>
+                      <Input
+                        id="companyName"
+                        name="companyName"
+                        value={formData.companyName}
+                        onChange={handleInputChange}
+                        placeholder="Your company name"
+                        className={`bg-input border-border font-mono ${errors.companyName ? 'border-destructive' : ''}`}
+                      />
+                      {errors.companyName && <p className="text-destructive text-sm mt-1 font-mono">{errors.companyName}</p>}
+                    </div>
+
+                    <div className="md:col-span-2">
+                      <Label htmlFor="industry" className="font-mono text-sm">Industry</Label>
+                      <Input
+                        id="industry"
+                        name="industry"
+                        value={formData.industry}
+                        onChange={handleInputChange}
+                        placeholder="e.g., SaaS, E-commerce, Healthcare"
+                        className="bg-input border-border font-mono"
+                      />
+                    </div>
+                  </div>
                 </div>
-                <p className="text-gray-600">
-                  Thank you for your interest! Our team will review your requirements and send you a detailed proposal within 24 hours.
-                </p>
-              </div>
+
+                {/* Services Selection */}
+                <div>
+                  <h3 className="text-lg font-semibold draincore-font mb-6 text-primary">
+                    &gt; SERVICES NEEDED *
+                  </h3>
+                  {errors.services && <p className="text-destructive text-sm mb-4 font-mono">{errors.services}</p>}
+                  <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+                    {SERVICES.map(service => (
+                      <div
+                        key={service.id}
+                        className={`p-4 cursor-pointer transition-all duration-300 glass-card ${
+                          formData.services.includes(service.id)
+                            ? 'border-2 border-primary shadow-glow'
+                            : 'border border-border hover:border-muted-foreground'
+                        }`}
+                        onClick={() => handleServiceChange(service.id)}
+                      >
+                        <div className="flex items-start gap-3">
+                          <Checkbox
+                            checked={formData.services.includes(service.id)}
+                            onCheckedChange={() => handleServiceChange(service.id)}
+                            className="mt-1 border-primary data-[state=checked]:bg-primary data-[state=checked]:text-primary-foreground"
+                          />
+                          <div>
+                            <div className="flex items-center gap-2 mb-1">
+                              <span className="text-primary">{service.icon}</span>
+                              <p className="font-semibold font-mono text-foreground">{service.label}</p>
+                            </div>
+                            <p className="text-sm text-primary font-mono">
+                              ${service.price.toLocaleString()}
+                              {service.period && <span className="text-muted-foreground">{service.period}</span>}
+                            </p>
+                          </div>
+                        </div>
+                      </div>
+                    ))}
+                  </div>
+                </div>
+
+                {/* Pricing Preview */}
+                {formData.services.length > 0 && (
+                  <div className="glass-card p-4 border border-primary/30">
+                    <h4 className="font-mono text-sm text-muted-foreground mb-2">// PRICING PREVIEW</h4>
+                    <div className="flex flex-wrap gap-6">
+                      {oneTime > 0 && (
+                        <div>
+                          <span className="text-muted-foreground font-mono text-sm">One-time: </span>
+                          <span className="text-primary font-bold font-mono">${oneTime.toLocaleString()}</span>
+                        </div>
+                      )}
+                      {monthly > 0 && (
+                        <div>
+                          <span className="text-muted-foreground font-mono text-sm">Monthly: </span>
+                          <span className="text-primary font-bold font-mono">${monthly.toLocaleString()}/mo</span>
+                        </div>
+                      )}
+                    </div>
+                  </div>
+                )}
+
+                {/* Budget & Timeline */}
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                  <div>
+                    <Label htmlFor="budget" className="font-mono text-sm">Budget Range *</Label>
+                    <Select value={formData.budget} onValueChange={(value) => handleSelectChange('budget', value)}>
+                      <SelectTrigger className={`bg-input border-border font-mono ${errors.budget ? 'border-destructive' : ''}`}>
+                        <SelectValue placeholder="Select a budget range" />
+                      </SelectTrigger>
+                      <SelectContent className="bg-popover border-border">
+                        {BUDGET_RANGES.map(range => (
+                          <SelectItem key={range} value={range} className="font-mono">
+                            {range}
+                          </SelectItem>
+                        ))}
+                      </SelectContent>
+                    </Select>
+                    {errors.budget && <p className="text-destructive text-sm mt-1 font-mono">{errors.budget}</p>}
+                  </div>
+
+                  <div>
+                    <Label htmlFor="timeline" className="font-mono text-sm">Timeline *</Label>
+                    <Select value={formData.timeline} onValueChange={(value) => handleSelectChange('timeline', value)}>
+                      <SelectTrigger className={`bg-input border-border font-mono ${errors.timeline ? 'border-destructive' : ''}`}>
+                        <SelectValue placeholder="Select a timeline" />
+                      </SelectTrigger>
+                      <SelectContent className="bg-popover border-border">
+                        {TIMELINES.map(timeline => (
+                          <SelectItem key={timeline} value={timeline} className="font-mono">
+                            {timeline}
+                          </SelectItem>
+                        ))}
+                      </SelectContent>
+                    </Select>
+                    {errors.timeline && <p className="text-destructive text-sm mt-1 font-mono">{errors.timeline}</p>}
+                  </div>
+                </div>
+
+                {/* Requirements */}
+                <div>
+                  <Label htmlFor="requirements" className="font-mono text-sm">Project Requirements *</Label>
+                  <Textarea
+                    id="requirements"
+                    name="requirements"
+                    value={formData.requirements}
+                    onChange={handleInputChange}
+                    placeholder="Describe your project requirements, goals, and specific needs..."
+                    className={`min-h-32 bg-input border-border font-mono ${errors.requirements ? 'border-destructive' : ''}`}
+                  />
+                  {errors.requirements && <p className="text-destructive text-sm mt-1 font-mono">{errors.requirements}</p>}
+                </div>
+
+                {/* Current Challenges */}
+                <div>
+                  <Label htmlFor="currentChallenges" className="font-mono text-sm">Current Challenges (Optional)</Label>
+                  <Textarea
+                    id="currentChallenges"
+                    name="currentChallenges"
+                    value={formData.currentChallenges}
+                    onChange={handleInputChange}
+                    placeholder="What challenges are you currently facing?"
+                    className="min-h-24 bg-input border-border font-mono"
+                  />
+                </div>
+
+                {/* Submit Button */}
+                <Button
+                  type="submit"
+                  disabled={isSubmitting}
+                  className="w-full bg-primary text-primary-foreground hover:bg-primary/90 font-mono tracking-wider py-6 text-lg brutalist-border"
+                >
+                  {isSubmitting ? (
+                    <>
+                      <span className="animate-spin mr-2">⏳</span>
+                      GENERATING PROPOSAL...
+                    </>
+                  ) : (
+                    <>
+                      <Send className="w-5 h-5 mr-2" />
+                      GENERATE PROPOSAL
+                    </>
+                  )}
+                </Button>
+              </form>
             </CardContent>
           </Card>
-        )}
-      </div>
+        </div>
+      </main>
+
+      <Footer />
     </div>
   );
 }

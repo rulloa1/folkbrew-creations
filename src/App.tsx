@@ -9,6 +9,8 @@ import Index from "./pages/Index";
 import Auth from "./pages/Auth";
 import Admin from "./pages/Admin";
 import Proposals from "./pages/Proposals";
+import ProposalPreview from "./pages/ProposalPreview";
+import PaymentSuccess from "./pages/PaymentSuccess";
 import Testimonials from "./pages/Testimonials";
 import NotFound from "./pages/NotFound";
 
@@ -26,6 +28,8 @@ const App = () => (
             <Route path="/auth" element={<Auth />} />
             <Route path="/admin" element={<Admin />} />
             <Route path="/proposals" element={<Proposals />} />
+            <Route path="/proposal/:id" element={<ProposalPreview />} />
+            <Route path="/payment-success" element={<PaymentSuccess />} />
             <Route path="/testimonials" element={<Testimonials />} />
             {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
             <Route path="*" element={<NotFound />} />
