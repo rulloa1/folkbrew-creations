@@ -16,6 +16,27 @@ const supabase = createClient(
   Deno.env.get('SUPABASE_SERVICE_ROLE_KEY')!
 );
 
+async function sendEmailNotification(data: any) {
+  try {
+    const response = await fetch(`${Deno.env.get('SUPABASE_URL')}/functions/v1/send-email`, {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+        'Authorization': `Bearer ${Deno.env.get('SUPABASE_ANON_KEY')}`,
+      },
+      body: JSON.stringify(data),
+    });
+    
+    if (!response.ok) {
+      console.error('Email notification failed:', await response.text());
+    } else {
+      console.log('Email notification sent:', data.type);
+    }
+  } catch (error) {
+    console.error('Error sending email notification:', error);
+  }
+}
+
 serve(async (req) => {
   if (req.method === 'OPTIONS') {
     return new Response(null, { headers: corsHeaders });
@@ -65,6 +86,31 @@ serve(async (req) => {
 
     if (proposalError) {
       console.error('Error updating proposal status:', proposalError);
+    }
+
+    // Fetch proposal details for email
+    const { data: proposal } = await supabase
+      .from('proposals')
+      .select('*')
+      .eq('id', proposalId)
+      .single();
+
+    if (proposal) {
+      const emailData = {
+        proposalNumber: proposal.proposal_number,
+        clientName: `${proposal.first_name} ${proposal.last_name}`,
+        clientEmail: proposal.email,
+        companyName: proposal.company_name,
+        services: proposal.services as any[],
+        oneTimeTotal: proposal.one_time_total,
+        monthlyTotal: proposal.monthly_total,
+        paymentType: session.metadata?.payment_type,
+        paymentAmount: session.amount_total,
+      };
+
+      // Send payment confirmation emails (fire and forget)
+      sendEmailNotification({ ...emailData, type: 'payment_client' });
+      sendEmailNotification({ ...emailData, type: 'payment_admin' });
     }
 
     console.log('Payment verified and recorded successfully');
