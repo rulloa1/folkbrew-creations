@@ -154,19 +154,16 @@ export default function Proposals() {
 
     try {
       const { oneTime, monthly } = calculatePricing();
-      const proposalNumber = `PROP-${Date.now()}`;
       const selectedServices = SERVICES.filter(s => formData.services.includes(s.id));
 
-      // Insert proposal into database
-      const { data: proposal, error } = await supabase
-        .from('proposals')
-        .insert({
-          proposal_number: proposalNumber,
-          first_name: formData.firstName,
-          last_name: formData.lastName,
+      // Submit proposal via edge function for server-side validation
+      const { data: response, error } = await supabase.functions.invoke('submit-proposal', {
+        body: {
+          firstName: formData.firstName,
+          lastName: formData.lastName,
           email: formData.email,
           phone: formData.phone,
-          company_name: formData.companyName,
+          companyName: formData.companyName,
           industry: formData.industry || null,
           services: selectedServices.map(s => ({
             id: s.id,
@@ -177,14 +174,17 @@ export default function Proposals() {
           budget: formData.budget,
           timeline: formData.timeline,
           requirements: formData.requirements,
-          current_challenges: formData.currentChallenges || null,
-          one_time_total: oneTime * 100, // Store in cents
-          monthly_total: monthly * 100,
-        })
-        .select()
-        .single();
+          currentChallenges: formData.currentChallenges || null,
+          oneTimeTotal: oneTime * 100, // Store in cents
+          monthlyTotal: monthly * 100,
+        },
+      });
 
       if (error) throw error;
+      if (response?.error) throw new Error(response.error);
+
+      const proposal = response.proposal;
+      const proposalNumber = proposal.proposal_number;
 
       // Send email notifications (fire and forget - don't block navigation)
       const emailData = {
