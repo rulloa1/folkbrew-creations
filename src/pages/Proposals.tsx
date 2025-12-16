@@ -186,9 +186,37 @@ export default function Proposals() {
 
       if (error) throw error;
 
+      // Send email notifications (fire and forget - don't block navigation)
+      const emailData = {
+        proposalNumber,
+        clientName: `${formData.firstName} ${formData.lastName}`,
+        clientEmail: formData.email,
+        companyName: formData.companyName,
+        services: selectedServices.map(s => ({
+          label: s.label,
+          price: s.price,
+          period: s.period || null,
+        })),
+        oneTimeTotal: oneTime * 100,
+        monthlyTotal: monthly * 100,
+        timeline: formData.timeline,
+        budget: formData.budget,
+        requirements: formData.requirements,
+      };
+
+      // Send to client
+      supabase.functions.invoke('send-email', {
+        body: { ...emailData, type: 'proposal_client' },
+      }).catch(err => console.error('Failed to send client email:', err));
+
+      // Send to admin
+      supabase.functions.invoke('send-email', {
+        body: { ...emailData, type: 'proposal_admin' },
+      }).catch(err => console.error('Failed to send admin email:', err));
+
       toast({
         title: 'Proposal Generated!',
-        description: 'Your custom proposal is ready. Redirecting to preview...',
+        description: 'Your custom proposal is ready. Check your email for details!',
       });
 
       // Navigate to proposal preview
