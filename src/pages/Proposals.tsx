@@ -221,7 +221,7 @@ export default function Proposals() {
 
       // Navigate to proposal preview
       navigate(`/proposal/${proposal.id}`);
-    } catch (error: any) {
+    } catch (error: unknown) {
       console.error('Error creating proposal:', error);
       toast({
         title: 'Error',

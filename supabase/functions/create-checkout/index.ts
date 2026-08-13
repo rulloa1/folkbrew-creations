@@ -21,7 +21,7 @@ serve(async (req) => {
     console.log('Creating checkout session:', { proposalId, proposalNumber, paymentType, amount, clientEmail });
 
     // Create line items description
-    const serviceNames = services.map((s: any) => s.label).join(', ');
+    const serviceNames = services.map((s: { label: string }) => s.label).join(', ');
     const description = paymentType === 'deposit' 
       ? `50% Deposit for: ${serviceNames}`
       : `Full Payment for: ${serviceNames}`;

@@ -16,7 +16,12 @@ const supabase = createClient(
   Deno.env.get('SUPABASE_SERVICE_ROLE_KEY')!
 );
 
-async function sendEmailNotification(data: any) {
+type EmailNotification = {
+  type?: string;
+  [key: string]: unknown;
+};
+
+async function sendEmailNotification(data: EmailNotification) {
   try {
     const response = await fetch(`${Deno.env.get('SUPABASE_URL')}/functions/v1/send-email`, {
       method: 'POST',
@@ -101,7 +106,7 @@ serve(async (req) => {
         clientName: `${proposal.first_name} ${proposal.last_name}`,
         clientEmail: proposal.email,
         companyName: proposal.company_name,
-        services: proposal.services as any[],
+        services: Array.isArray(proposal.services) ? proposal.services : [],
         oneTimeTotal: proposal.one_time_total,
         monthlyTotal: proposal.monthly_total,
         paymentType: session.metadata?.payment_type,
